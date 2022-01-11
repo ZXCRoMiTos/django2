@@ -2,8 +2,6 @@ from django.contrib import auth
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.conf import settings
-from django.core.mail import send_mail
 from authapp.forms import ShopUserLoginForm, ShopUserCreationForm, ShopUserChangeForm
 from authapp.models import ShopUser
 
@@ -49,7 +47,7 @@ def register(request):
         form = ShopUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
-            if send_verify_mail(user):
+            if user.send_verify_mail():
                 registered = True
             else:
                 print('Ошибка отправки.')
@@ -96,11 +94,3 @@ def verify(request, email, activation_key):
         print(f'error activation user : {e.args}')
         return HttpResponseRedirect(reverse('main:index'))
 
-
-def send_verify_mail(user):
-    verify_link = reverse('auth:verify', args=[user.email, user.activation_key])
-    title = f'Подтверждение учетной записи {user.username}'
-    message = f'Для подтверждения учетной записи {user.username} на портале ' \
-              f'{settings.DOMAIN_NAME} перейдите по ссылке: \n{settings.DOMAIN_NAME}{verify_link}'
-
-    return send_mail(title, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
