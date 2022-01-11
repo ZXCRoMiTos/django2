@@ -13,7 +13,6 @@ class ShopUser(AbstractUser):
     avatar = models.ImageField(upload_to='avatars', blank=True)
     is_activate = models.BooleanField(default=False)
     activation_key = models.CharField(max_length=128, blank=True)
-    registered = models.DateTimeField(auto_now_add=True)
 
     def basket_price(self):
         return sum(el.product_cost for el in self.basket.all())
@@ -22,7 +21,7 @@ class ShopUser(AbstractUser):
         return sum(el.qty for el in self.basket.all())
 
     def is_valid_key(self):
-        return now() - self.registered > timedelta(hours=ACTIVATION_KEY_TTL)
+        return now() - self.date_joined > timedelta(hours=ACTIVATION_KEY_TTL)
 
     def send_verify_mail(self):
         verify_link = reverse('auth:verify', args=[self.email, self.activation_key])
