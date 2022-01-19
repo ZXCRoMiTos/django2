@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django.forms import HiddenInput, forms
+import hashlib
+import random
 
 
 class ShopUserLoginForm(AuthenticationForm):
@@ -28,6 +30,15 @@ class ShopUserCreationForm(AgeValidatorMixin, UserCreationForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = f'form-control {field_name}'
             field.help_text = ''
+
+    def save(self):
+        user = super(ShopUserCreationForm, self).save()
+        user.is_activate = False
+        salt = hashlib.sha1(str(random.random()).encode('utf8')).hexdigest()[:6]
+        user.activation_key = hashlib.sha1((user.email + salt).encode('utf8')).hexdigest()
+        user.save()
+
+        return user
 
 
 class ShopUserChangeForm(AgeValidatorMixin, UserChangeForm):
