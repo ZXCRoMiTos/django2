@@ -50,7 +50,7 @@ class Order(models.Model):
 
     def delete(self):
         for item in self.orderitems.select_related():
-            item.product.qty += item.qty
+            item.product.quantity += item.qty
             item.product.save()
 
         self.is_active = False

@@ -22,12 +22,11 @@ class OrderItemsCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         data = super(OrderItemsCreate, self).get_context_data(**kwargs)
-        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=3)
 
         if self.request.POST:
             formset = OrderFormSet(self.request.POST, self.request.FILES)
         else:
-            data['form'].initial['user'] = self.request.user
             basket_items = self.request.user.basket.all()
             if basket_items and basket_items.count():
                 OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=basket_items.count() + 1)
@@ -35,6 +34,7 @@ class OrderItemsCreate(CreateView):
                 for form, basket_item in zip(formset.forms, basket_items):
                     form.initial['product'] = basket_item.product
                     form.initial['qty'] = basket_item.qty
+                basket_items.delete()
             else:
                 formset = OrderFormSet()
 
@@ -46,16 +46,16 @@ class OrderItemsCreate(CreateView):
         orderitems = context['orderitems']
 
         with transaction.atomic():
-            result = super().form_valid(form)
+            form.instance.user = self.request.user
+            self.object = form.save()
             if orderitems.is_valid():
                 orderitems.instance = self.object
                 orderitems.save()
-            self.request.user.basket.all().delete()
 
-        if self.object.get_total_cost == 0:
+        if self.object.get_total_cost() == 0:
             self.object.delete()
 
-        return result
+        return super(OrderItemsCreate, self).form_valid(form)
 
 
 class OrderItemsUpdate(UpdateView):
@@ -92,7 +92,7 @@ class OrderItemsUpdate(UpdateView):
 
 class OrderDelete(DeleteView):
    model = Order
-   success_url = reverse_lazy('ordersapp:orders_list')
+   success_url = reverse_lazy('order:orders_list')
 
 
 class OrderRead(DetailView):
