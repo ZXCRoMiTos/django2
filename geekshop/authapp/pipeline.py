@@ -4,7 +4,7 @@ import os
 
 
 def save_user_profile(backend, user, response, *args, **kwargs):
-    
+
     if backend.name == "google-oauth2":
         if 'email' in response.keys():
             user.email = response['email']
