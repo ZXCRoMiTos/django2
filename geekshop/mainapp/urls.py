@@ -5,12 +5,10 @@ import mainapp.views as mainapp
 app_name = 'mainapp'
 
 urlpatterns = [
-    path('', mainapp.index, name='index'),
-    path('products/', mainapp.products, name='products'),
-    path('contact/', mainapp.contact, name='contact'),
-
-    path('category/<int:pk>/', mainapp.category, name='category'),
-    # re_path('category/(?P<pk>\d+)/$', mainapp.category, name='category'),
-    path('product/<int:pk>/', mainapp.product_page, name='product_page'),
-
+    path('', mainapp.Index.as_view(), name='index'),
+    path('new/', mainapp.Index.as_view(), name='index_new'),
+    path('products/', mainapp.Products.as_view(), name='products'),
+    path('contact/', mainapp.Contact.as_view(), name='contact'),
+    path('category/<int:pk>/', mainapp.Category.as_view(), name='category'),
+    path('product/<int:pk>/', mainapp.ProductPage.as_view(), name='product_page'),
 ]

@@ -5,7 +5,6 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView, DetailView
-
 from adminapp.forms import AdminShopUserUpdateForm, AdminProductCategoryCreateForm, AdminProductUpdateForm
 from mainapp.models import ProductCategory, Product
 
