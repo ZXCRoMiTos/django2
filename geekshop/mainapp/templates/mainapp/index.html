@@ -13,7 +13,7 @@
             <h3 class="green">тенденции</h3>
             <h3 class="big"> удобные стулья</h3>
             <p>Новый уровень комфорта. Отличные характеристики.</p>
-            <a href="#" class="button-order">заказать <img src="img/arrow.png" alt=""></a>
+            <a href="{% url 'basket:add' 12 %}" class="button-order">заказать <img src="img/arrow.png" alt=""></a>
         </div>
         <div class="navi">
             <a href="#"></a><a href="#"></a><a href="#"></a>
@@ -22,9 +22,9 @@
 
     <div class="featured">
         <div class="featured-menu">
-            <a class="active" href="#">Популярные</a><a href="#">Новинки</a>
+            <a class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'main:index' %}">Популярные</a><a class="{% if request.resolver_match.url_name == 'index_new' %}active{% endif %}" href="{% url 'main:index_new' %}">Новинки</a>
         </div>
-        <a class="explore" href="#">показать все <img src="img/arrow.png" alt=""></a>
+        <a class="explore" href="{% url 'main:category' 0 %}">показать все <img src="img/arrow.png" alt=""></a>
         <div class="clearfix">
         </div>
         <div class="tab-content">
@@ -46,6 +46,33 @@
                     </div>
                 </a>
             </div>
+            {% if request.resolver_match.url_name == 'index' %}
+                {% for item in top_products %}
+                    <div class="block">
+                        <a href="{% url 'main:product_page' item.pk %}">
+                            <img width="270" height="270" src="/media/{{ item.image }}" alt="">
+                            <div class="text">
+                                <img src="/static/img/icon-hover.png" alt="img">
+                                <h4>{{ item.name }}</h4>
+                                <p>{{ item.short_desc }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% for item in new_products %}
+                    <div class="block">
+                        <a href="{% url 'main:product_page' item.pk %}">
+                            <img width="270" height="270" src="/media/{{ item.image }}" alt="">
+                            <div class="text">
+                                <img src="/static/img/icon-hover.png" alt="img">
+                                <h4>{{ item.name }}</h4>
+                                <p>{{ item.short_desc }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

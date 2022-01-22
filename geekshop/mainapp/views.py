@@ -12,6 +12,14 @@ def get_hot_product():
     return Product.objects.get(pk=random_id)
 
 
+def get_popular_products():
+    return Product.objects.all().order_by('-views')[:4]
+
+
+def get_new_products():
+    return Product.objects.all().order_by('-created')[:4]
+
+
 def same_products(hot_product):
     return Product.objects.filter(category=hot_product.category). \
                exclude(pk=hot_product.pk)[:3]
@@ -19,7 +27,10 @@ def same_products(hot_product):
 
 class Index(View):
     def get(self, request):
-        return render(request, 'mainapp/index.html', {'page_title': 'главная', })
+        context = {'page_title': 'главная',
+                   'top_products': get_popular_products(),
+                   'new_products': get_new_products(), }
+        return render(request, 'mainapp/index.html', context)
 
 
 class Products(View):
@@ -60,6 +71,8 @@ class Category(View):
 class ProductPage(View):
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
+        product.views += 1
+        product.save()
         context = {
             'page_title': 'страница продукта',
             'product': product,

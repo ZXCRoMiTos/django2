@@ -6,6 +6,7 @@ app_name = 'mainapp'
 
 urlpatterns = [
     path('', mainapp.Index.as_view(), name='index'),
+    path('new/', mainapp.Index.as_view(), name='index_new'),
     path('products/', mainapp.Products.as_view(), name='products'),
     path('contact/', mainapp.Contact.as_view(), name='contact'),
     path('category/<int:pk>/', mainapp.Category.as_view(), name='category'),

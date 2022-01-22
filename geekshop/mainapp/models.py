@@ -28,6 +28,8 @@ class Product(models.Model):
     short_desc = models.CharField('краткое описание', max_length=200, blank=True)
     price = models.DecimalField('цена', max_digits=8, decimal_places=2, default=0)
     quantity = models.PositiveIntegerField('количество на складе', default=0)
+    created = models.DateTimeField(verbose_name='создан', auto_now_add=True)
+    views = models.IntegerField('просмотры', default=0)
     is_active = models.BooleanField('активность', default=True)
 
     def __str__(self):
