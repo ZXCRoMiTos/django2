@@ -8,6 +8,10 @@ from basketapp.models import BasketItem
 from geekshop.settings import LOGIN_URL
 
 
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
 @login_required
 def index(request):
     basket = request.user.basket.all()
@@ -44,7 +48,7 @@ def remove(request, basket_item_pk):
 
 
 def update(request, basket_item_pk, qty):
-    if request.is_ajax():
+    if is_ajax(request=request):
         item = BasketItem.objects.filter(pk=basket_item_pk).first()
         if not item:
             return JsonResponse({'status': False})
