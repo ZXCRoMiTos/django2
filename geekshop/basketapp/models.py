@@ -12,6 +12,17 @@ class BasketItem(models.Model):
     add_dt = models.DateTimeField('время', auto_now_add=True)
     update_dt = models.DateTimeField('время', auto_now=True)
 
+    def delete(self):
+        self.product.quantity += self.qty
+        self.product.save()
+        super(self.__class__, self).delete()
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.product.quantity -= 1
+            self.product.save()
+        super(self.__class__, self).save(*args, **kwargs)
+
     @property
     def product_cost(self):
         return self.product.price * self.qty
