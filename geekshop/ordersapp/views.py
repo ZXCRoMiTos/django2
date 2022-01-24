@@ -38,7 +38,7 @@ class OrderItemsCreate(CreateView):
                 for form, basket_item in zip(formset.forms, basket_items):
                     form.initial['product'] = basket_item.product
                     form.initial['qty'] = basket_item.qty
-                basket_items.delete()
+                    form.initial['price'] = basket_item.product.price
             else:
                 formset = OrderFormSet()
 
@@ -55,6 +55,7 @@ class OrderItemsCreate(CreateView):
             if orderitems.is_valid():
                 orderitems.instance = self.object
                 orderitems.save()
+                self.request.user.basket.all().delete()
 
         if self.object.get_total_cost() == 0:
             self.object.delete()
@@ -74,7 +75,11 @@ class OrderItemsUpdate(UpdateView):
         if self.request.POST:
             data['orderitems'] = OrderFormSet(self.request.POST, instance=self.object)
         else:
-            data['orderitems'] = OrderFormSet(instance=self.object)
+            formset = OrderFormSet(instance=self.object)
+            for form in formset.forms:
+                if form.instance.pk:
+                    form.initial['price'] = form.instance.product.price
+        data['orderitems'] = formset
 
         return data
 
