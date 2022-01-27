@@ -1,9 +1,21 @@
 import random
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from mainapp.models import Product, ProductCategory
 from django.views.generic import View
+
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
+def get_product_price(request, pk):
+    if is_ajax(request=request):
+        product = Product.objects.filter(pk=pk).first()
+        return JsonResponse(
+            {'price': product and product.price or 0}
+        )
 
 
 def get_hot_product():
